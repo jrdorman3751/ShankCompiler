@@ -12,6 +12,7 @@ import static java.lang.Character.isLetter;
  * Assignment 1-3rd Draft 9/7/22
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
+ * Assignment 4-2nd Draft 9/22/22
  */
 /*
     Assignment 1:
@@ -19,10 +20,15 @@ import static java.lang.Character.isLetter;
         2) method uses state machine(s) to iterate over string
         3) throw exception if not accepted char
     Assignment 2:
-        1) add parenthesis cases to all states
+        1) add parenthesis case to all states
     Assignment 3:
         1) add new state for words
             a) hashmap for reserved words
+        2) add case for : ; , = to state 1
+    Assignment 4:
+        1) add comment case to all states
+        2) add comment state
+        3) add assignment case to state 1
  */
 public class Lexer {
     private String input;
@@ -148,14 +154,26 @@ public class Lexer {
                     }
                     else if(current == '(' || current == ')'){
                         addNumber();
-                        result.add(getChar(current));
+                        if(current == '(' && input.charAt(x+1) == '*'){
+                            x++;
+                            s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
                     }
                     else if(isLetter(current)){
                         previousWordChars.add(current);
                         s = 7;
                     }
                     else if(current == ',' || current == ':' || current == '=' || current == ';'){
+                        if(current == ':' && input.charAt(x+1) == '='){
+                            x++;
+                            result.add(Token.symbols.ASSIGNMENT);
+                        }
+                        else {
                             result.add(getChar(current));
+                        }
                     }
                     else{
                         throw new StateException("Incorrect Input:State 1");
@@ -172,7 +190,13 @@ public class Lexer {
                     }
                     else if(current == '(' || current == ')'){
                         addNumber();
-                        result.add(getChar(current));
+                        if(current == '(' && input.charAt(x+1) == '*'){
+                            x++;
+                            s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
                     }
                     else{
                         throw new StateException("Incorrect Input:State 2");
@@ -197,7 +221,13 @@ public class Lexer {
                     }
                     else if(current == '(' || current == ')'){
                         addNumber();
-                        result.add(getChar(current));
+                        if(current == '(' && input.charAt(x+1) == '*'){
+                            x++;
+                            s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
                     }
                     else{
                         throw new StateException("Incorrect Input:State 3");
@@ -218,7 +248,13 @@ public class Lexer {
                     }
                     else if(current == '(' || current == ')'){
                         addNumber();
-                        result.add(getChar(current));
+                        if(current == '(' && input.charAt(x+1) == '*'){
+                            x++;
+                            s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
                     }
                     else{
                         throw new StateException("Incorrect Input:State 4");
@@ -235,7 +271,13 @@ public class Lexer {
                     }
                     else if(current == '(' || current == ')'){
                         addNumber();
-                        result.add(getChar(current));
+                        if(current == '(' && input.charAt(x+1) == '*'){
+                            x++;
+                            s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
                     }
                     else{
                         throw new StateException("Incorrect Input:State 5");
@@ -253,7 +295,13 @@ public class Lexer {
                     }
                     else if(current == '(' || current == ')'){
                         addNumber();
-                        result.add(getChar(current));
+                        if(current == '(' && input.charAt(x+1) == '*'){
+                            x++;
+                            s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
                     }
                     else{
                         throw new StateException("Incorrect Input:State 5");
@@ -271,17 +319,28 @@ public class Lexer {
                             s = 1;
                         }
                         else if (getChar(current) != null) {//'(',')',':',';','=',','
-                            if (current == '(' || current == ')') {
-                                addNumber();
+                            if(current == '(' && current == '*') {
+                                x++;
+                                s = 8;
                             }
-                            result.add(getChar(current));
-                            s = 1;
+                            else {
+                                result.add(getChar(current));
+                                s = 1;
+                            }
                         }
                         else {
                             throw new StateException("Incorrect Input:State 7");
                         }
                     }
                     break;
+                case 8:
+                    if(current == '*' && input.charAt(x+1) == ')'){
+                        x++;
+                        s = 1;
+                    }
+                    else{
+                        s = 8;
+                    }
             }
         }
         addNumber();

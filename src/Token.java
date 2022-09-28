@@ -4,6 +4,7 @@
  * Assignment 1-3rd Draft 9/7/22
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
+ * Assignment 4-2nd Draft 9/24/22
  */
 /*
     Assignment 1:
@@ -19,6 +20,9 @@
         4) add Identifier, define, integer, real, begin, end, semicolon, colon, equal, comma, variables, constants
         5) instance of words String
             a) variable is private, public accessor
+    Assignment 4:
+        6) add Assignment
+
  */
 public class Token {
     private static String value;
@@ -58,7 +62,7 @@ public class Token {
     }
     public enum symbols{ //2)
         IDENTIFIER, DEFINE, VARIABLES, CONSTANTS,
-        SEMICOLON, COLON, COMMA, EQUAL,
+        SEMICOLON, COLON, COMMA, EQUAL, ASSIGNMENT,
         NUMBER, INTEGER, REAL,
         MINUS, PLUS, TIMES, DIVIDE,
         LPAREN, RPAREN,
@@ -82,6 +86,7 @@ public class Token {
                 case COLON -> "Colon ";
                 case COMMA -> "Comma ";
                 case EQUAL -> "Equals ";
+                case ASSIGNMENT ->  "Assignment ";
                 case IDENTIFIER -> "Identifier";
                 case DEFINE -> "Define ";
                 case VARIABLES -> "Variables ";

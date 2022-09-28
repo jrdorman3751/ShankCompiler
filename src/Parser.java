@@ -5,6 +5,7 @@ import java.util.ArrayList;
  * 311-Phipps
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
+ * Assignment 4-2nd Draft 9/22/22
  */
 /*
     Assignment 2:
@@ -23,6 +24,9 @@ import java.util.ArrayList;
             d) look for vars
             e) look for constants
             f) look for variables
+            g) look for body
+     Assignment 4:
+            h) look for statements in body
  */
 public class Parser {
     private ArrayList<Token.symbols> tokens;
@@ -94,7 +98,10 @@ public class Parser {
                 vars = variables();
                 function.setVars(vars);
                 while(matchAndRemove(Token.symbols.EOL) != null){}
-                body();
+                ArrayList<StatementNode> statements = new ArrayList<>();
+                statements = body();
+                function.setStatements(statements);
+                while(matchAndRemove(Token.symbols.EOL) != null){}
                 return function;
             }
             else{
@@ -184,11 +191,14 @@ public class Parser {
         return out;
     }
 
-    public boolean body() throws Exception {
+    public ArrayList<StatementNode> body() throws Exception {
         if(matchAndRemove(Token.symbols.BEGIN) != null && matchAndRemove(Token.symbols.EOL) != null){
             while(matchAndRemove(Token.symbols.EOL) != null){}
+            ArrayList<StatementNode> out = new ArrayList<>();
+            out = statement();
+            while(matchAndRemove(Token.symbols.EOL) != null){}
             if(matchAndRemove(Token.symbols.END) != null && matchAndRemove(Token.symbols.EOL) != null){
-
+                return out;
             }
             else{
                 throw new Exception("Body error");
@@ -197,9 +207,21 @@ public class Parser {
         else {
             throw new Exception("Body error");
         }
-        return true;
     }
+    public ArrayList<StatementNode> statement() throws Exception {
+        ArrayList<StatementNode> out = new ArrayList<>();
+        if(out.add(assignment())){
+        }
+        out.remove(null);
+        return out;
+    }
+    public StatementNode assignment() throws Exception {
+        if(matchAndRemove(Token.symbols.IDENTIFIER) != null && matchAndRemove(Token.symbols.ASSIGNMENT) != null){
+            return new StatementNode(new AssignmentNode(new VariableReferenceNode(Token.getWord()), expression()));
+        }
 
+        return null;
+    }
      /*
         term { ( plus or minus) term }
         1) call term for left node
