@@ -7,7 +7,8 @@ import static java.lang.Character.isDigit;
 /**
  * Julian Dorman
  * 311-Phipps
- * Assignment 1-3rd Draft 9/9/22
+ * Assignment 1-3rd Draft 9/7/22
+ * Assignment 2-2nd Draft 9/9/22
  *
  */
 /*
@@ -15,6 +16,8 @@ import static java.lang.Character.isDigit;
         1) lexer method, accepts string and returns collection of tokens
         2) method uses state machine(s) to iterate over string
         3) throw exception if not accepted char
+    Assignment 2:
+        1) add parenthesis cases to all states
  */
 public class Lexer {
     private String input;
@@ -24,6 +27,15 @@ public class Lexer {
     List<Character> previousNumChars = new ArrayList<>();
     Lexer(){input = "";}
 
+    public Token.symbols getChar(char c){
+        if(c == '('){
+            return Token.symbols.LPAREN;
+        }
+        else if(c == ')'){
+            return Token.symbols.RPAREN;
+        }
+        return null;
+    }
     public Token.symbols getOperatorToken(char operator){
         return switch (operator){
             case '+' -> Token.symbols.PLUS;
@@ -104,6 +116,10 @@ public class Lexer {
                     else if(current == ' '){
                         s = 1;
                     }
+                    else if(current == '(' || current == ')'){
+                        addNumber();
+                        result.add(getChar(current));
+                    }
                     else{
                         throw new StateException("Incorrect Input:State 1");
                     }
@@ -116,6 +132,10 @@ public class Lexer {
                     else if(current == '.'){
                         previousNumChars.add(current);
                         s = 6;
+                    }
+                    else if(current == '(' || current == ')'){
+                        addNumber();
+                        result.add(getChar(current));
                     }
                     else{
                         throw new StateException("Incorrect Input:State 2");
@@ -138,6 +158,10 @@ public class Lexer {
                         previousNumChars.add(current);
                         s = 3;
                     }
+                    else if(current == '(' || current == ')'){
+                        addNumber();
+                        result.add(getChar(current));
+                    }
                     else{
                         throw new StateException("Incorrect Input:State 3");
                     }
@@ -155,6 +179,10 @@ public class Lexer {
                         previousNumChars.add(current);
                         s = 4;
                     }
+                    else if(current == '(' || current == ')'){
+                        addNumber();
+                        result.add(getChar(current));
+                    }
                     else{
                         throw new StateException("Incorrect Input:State 4");
                     }
@@ -167,6 +195,10 @@ public class Lexer {
                     }
                     else if(current == ' ') {
                         s = 5;
+                    }
+                    else if(current == '(' || current == ')'){
+                        addNumber();
+                        result.add(getChar(current));
                     }
                     else{
                         throw new StateException("Incorrect Input:State 5");
@@ -181,6 +213,10 @@ public class Lexer {
                         addNumber();
                         result.add(getOperatorToken(current));
                         s = 1;
+                    }
+                    else if(current == '(' || current == ')'){
+                        addNumber();
+                        result.add(getChar(current));
                     }
                     else{
                         throw new StateException("Incorrect Input:State 5");

@@ -9,7 +9,8 @@ import java.util.List;
 /**
  * Julian Dorman
  * 311-Phipps
- * Assignment 1-3rd Draft 9/9/22
+ * Assignment 1-3rd Draft 9/7/22
+ * Assignment 2-2nd Draft 9/9/22
  *
  */
 /*
@@ -21,6 +22,10 @@ import java.util.List;
         4) parse lines using lex method
             a) catch and print if exception
         5) temporary, print out tokens
+     Assignment 2:
+        6) create instance of parser for each line
+        7) call parserMethod for each parser created
+        8) temporary, print resolved parsed node
  */
 public class Shank {
 
@@ -29,7 +34,6 @@ public class Shank {
             System.out.println("Argument Error: usage is File Name");
             return;
         }
-        //2) reading file
         Path filepath = Paths.get(args[0]);//create file path from arg
         List<String> lines = new ArrayList<>();//create list for file lines
         try {
@@ -40,9 +44,7 @@ public class Shank {
         catch (IOException ex) {//if no file
             System.out.format("I/O error: %s%n", ex);
         }
-        //3)
         Lexer lexicalAnalyzer = new Lexer();
-        //4)
         ArrayList<Token.symbols> allTokens = new ArrayList<>();
         for (String line : lines) {
             try {
@@ -52,7 +54,7 @@ public class Shank {
                 return;
             }
         }
-        //5)temporary
+        /*temporary
         for (Token.symbols allToken : allTokens) {
             if (allToken == Token.symbols.EOL) {
                 System.out.println(allToken);
@@ -63,10 +65,12 @@ public class Shank {
             else{
                 System.out.print(allToken);
             }
-        }
-
+        }*/
+        Parser parser = new Parser(allTokens);
+        Node parsedExpression = parser.parserMethod();
+        System.out.println(parsedExpression.toString());
+        System.out.println(Interpreter.resolve(parsedExpression));
     }
-
 }
 
 //custom exception for error in state machine
