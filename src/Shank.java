@@ -11,7 +11,7 @@ import java.util.List;
  * 311-Phipps
  * Assignment 1-3rd Draft 9/7/22
  * Assignment 2-2nd Draft 9/9/22
- *
+ * Assignment 3-2nd Draft 9/16/22
  */
 /*
     Assignment 1:
@@ -26,6 +26,8 @@ import java.util.List;
         6) create instance of parser for each line
         7) call parserMethod for each parser created
         8) temporary, print resolved parsed node
+    Assignment 3:
+        8) don't run resolve
  */
 public class Shank {
 
@@ -54,13 +56,16 @@ public class Shank {
                 return;
             }
         }
-        /*temporary
+        /*//temporary
         for (Token.symbols allToken : allTokens) {
             if (allToken == Token.symbols.EOL) {
                 System.out.println(allToken);
             }
             else if (allToken == Token.symbols.NUMBER) {
                 System.out.print(allToken + "(" + Token.getNum() + ") ");
+            }
+            else if (allToken == Token.symbols.IDENTIFIER) {
+                System.out.print(allToken + "(" + Token.getWord() + ") ");
             }
             else{
                 System.out.print(allToken);
@@ -69,7 +74,8 @@ public class Shank {
         Parser parser = new Parser(allTokens);
         Node parsedExpression = parser.parserMethod();
         System.out.println(parsedExpression.toString());
-        System.out.println(Interpreter.resolve(parsedExpression));
+        //temporary System.out.println(Interpreter.resolve(parsedExpression));
+
     }
 }
 

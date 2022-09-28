@@ -1,15 +1,17 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.lang.Character.isDigit;
+import static java.lang.Character.isLetter;
 
 /**
  * Julian Dorman
  * 311-Phipps
  * Assignment 1-3rd Draft 9/7/22
  * Assignment 2-2nd Draft 9/9/22
- *
+ * Assignment 3-2nd Draft 9/16/22
  */
 /*
     Assignment 1:
@@ -18,23 +20,29 @@ import static java.lang.Character.isDigit;
         3) throw exception if not accepted char
     Assignment 2:
         1) add parenthesis cases to all states
+    Assignment 3:
+        1) add new state for words
+            a) hashmap for reserved words
  */
 public class Lexer {
     private String input;
     private int inputLength;
-    private int s;
     ArrayList<Token.symbols> result = new ArrayList<>();
     List<Character> previousNumChars = new ArrayList<>();
+    List<Character> previousWordChars = new ArrayList<>();
+
     Lexer(){input = "";}
 
     public Token.symbols getChar(char c){
-        if(c == '('){
-            return Token.symbols.LPAREN;
-        }
-        else if(c == ')'){
-            return Token.symbols.RPAREN;
-        }
-        return null;
+        return switch(c){
+            case '(' -> Token.symbols.LPAREN;
+            case ')' -> Token.symbols.RPAREN;
+            case ',' -> Token.symbols.COMMA;
+            case ':' -> Token.symbols.COLON;
+            case '=' -> Token.symbols.EQUAL;
+            case ';' -> Token.symbols.SEMICOLON;
+            default -> null;
+        };
     }
     public Token.symbols getOperatorToken(char operator){
         return switch (operator){
@@ -89,13 +97,35 @@ public class Lexer {
             previousNumChars.clear();
         }
     }
+    public void addWord(){
+        HashMap<String, Token.symbols> reserved = new HashMap<>();//hash map for reserved words
+        reserved.put("integer", Token.symbols.INTEGER);
+        reserved.put("real", Token.symbols.REAL);
+        reserved.put("begin", Token.symbols.BEGIN);
+        reserved.put("end", Token.symbols.END);
+        reserved.put("variables", Token.symbols.VARIABLES);
+        reserved.put("constants", Token.symbols.CONSTANTS);
+        reserved.put("define", Token.symbols.DEFINE);
+        if(previousWordChars.size() != 0) {
+            String wordString = previousWordChars.toString().substring(1, 3 * previousWordChars.size() - 1).replaceAll(", ", "");
+            if (reserved.containsKey(wordString)) {
+                result.add(reserved.get(wordString));
+                previousWordChars.clear();
+            } else {
+                Token.addWord(wordString);
+                result.add(Token.symbols.IDENTIFIER);
+                previousWordChars.clear();
+            }
+        }
+    }
     public ArrayList<Token.symbols> lexerMethod(String expression){
         result = new ArrayList<>();
         previousNumChars = new ArrayList<>();
+        previousWordChars = new ArrayList<>();
         input = expression;
         inputLength = expression.length();
 
-        s = 1;
+        int s = 1;
 
         for(int x = 0; x < inputLength; x++){
             char current = input.charAt(x);
@@ -119,6 +149,13 @@ public class Lexer {
                     else if(current == '(' || current == ')'){
                         addNumber();
                         result.add(getChar(current));
+                    }
+                    else if(isLetter(current)){
+                        previousWordChars.add(current);
+                        s = 7;
+                    }
+                    else if(current == ',' || current == ':' || current == '=' || current == ';'){
+                            result.add(getChar(current));
                     }
                     else{
                         throw new StateException("Incorrect Input:State 1");
@@ -222,9 +259,33 @@ public class Lexer {
                         throw new StateException("Incorrect Input:State 5");
                     }
                     break;
+                case 7:
+                    if(isLetter(current) || isDigit(current)){
+                        previousWordChars.add(current);
+                        s = 7;
+                        break;
+                    }
+                    else {
+                        addWord();
+                        if (current == ' ') {
+                            s = 1;
+                        }
+                        else if (getChar(current) != null) {//'(',')',':',';','=',','
+                            if (current == '(' || current == ')') {
+                                addNumber();
+                            }
+                            result.add(getChar(current));
+                            s = 1;
+                        }
+                        else {
+                            throw new StateException("Incorrect Input:State 7");
+                        }
+                    }
+                    break;
             }
         }
         addNumber();
+        addWord();
         if(ifOperatorToken(result.get(result.size()-1)) != null){
             throw new StateException("Incorrect Input:Ends with Operator");
         }
