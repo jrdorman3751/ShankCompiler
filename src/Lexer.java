@@ -345,8 +345,10 @@ public class Lexer {
         }
         addNumber();
         addWord();
-        if(ifOperatorToken(result.get(result.size()-1)) != null){
-            throw new StateException("Incorrect Input:Ends with Operator");
+        if(result.size() != 0) {
+            if (ifOperatorToken(result.get(result.size() - 1)) != null) {
+                throw new StateException("Incorrect Input:Ends with Operator");
+            }
         }
         result.add(Token.symbols.EOL);//add end of line symbol
 

@@ -1,4 +1,5 @@
 define start(t : integer; s : real)
+(* thi world be hoolow *)
 constants
 pi = 3.141
 variables
