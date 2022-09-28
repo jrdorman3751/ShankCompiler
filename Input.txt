@@ -6,4 +6,5 @@ variables
 a,b,c : integer
 begin
 x := 5+5
+y := 3+7
 end

@@ -209,18 +209,16 @@ public class Parser {
         }
     }
     public ArrayList<StatementNode> statement() throws Exception {
-        ArrayList<StatementNode> out = new ArrayList<>();
-        if(out.add(assignment())){
-        }
-        out.remove(null);
-        return out;
+        return assignment();
     }
-    public StatementNode assignment() throws Exception {
-        if(matchAndRemove(Token.symbols.IDENTIFIER) != null && matchAndRemove(Token.symbols.ASSIGNMENT) != null){
-            return new StatementNode(new AssignmentNode(new VariableReferenceNode(Token.getWord()), expression()));
+    public ArrayList<StatementNode> assignment() throws Exception {
+        ArrayList<StatementNode> out = new ArrayList<>();
+        while(matchAndRemove(Token.symbols.IDENTIFIER) != null && matchAndRemove(Token.symbols.ASSIGNMENT) != null){
+            out.add( new StatementNode(new AssignmentNode(new VariableReferenceNode(Token.getWord()), expression())));
+            while(matchAndRemove(Token.symbols.EOL) != null){}
         }
 
-        return null;
+        return out;
     }
      /*
         term { ( plus or minus) term }
