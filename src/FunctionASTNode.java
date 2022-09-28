@@ -49,6 +49,7 @@ public class FunctionASTNode extends Node{
 
     @Override
     public String toString() {
-        return "function: "+this.name+ "\nParams: "+params+"\nConstants: "+constants+"\nVariables: "+variables+"\nStatements: "+statements;
+        return "function: "+this.name+ "\nParams: "+params+"\nConstants: "+constants+"\nVariables: "+variables+"\n"+
+                Token.symbols.BEGIN+"\nStatements: "+statements+"\n"+Token.symbols.END;
     }
 }
