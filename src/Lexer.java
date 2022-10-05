@@ -13,6 +13,7 @@ import static java.lang.Character.isLetter;
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
  * Assignment 4-2nd Draft 9/22/22
+ * Assignment 5-1st Draft 10/1/22
  */
 /*
     Assignment 1:
@@ -20,15 +21,20 @@ import static java.lang.Character.isLetter;
         2) method uses state machine(s) to iterate over string
         3) throw exception if not accepted char
     Assignment 2:
-        1) add parenthesis case to all states
+        4) add parenthesis case to all states
     Assignment 3:
-        1) add new state for words
+        5) add new state for words
             a) hashmap for reserved words
-        2) add case for : ; , = to state 1
+        6) add case for : ; , = to state 1
     Assignment 4:
-        1) add comment case to all states
-        2) add comment state
-        3) add assignment case to state 1
+        7) add comment case to all states
+        8) add comment state
+        9) add assignment case to state 1
+   Assignment 5:
+         10) add if,then,else,elsif,for,from,to,while,repeat,until,mod to hashmap
+         11) add boolean comparators to state 1
+         12) space(2), sign(2), letter(7) to state 2
+         13) letter(7) to state 5
  */
 public class Lexer {
     private String input;
@@ -47,6 +53,10 @@ public class Lexer {
             case ':' -> Token.symbols.COLON;
             case '=' -> Token.symbols.EQUAL;
             case ';' -> Token.symbols.SEMICOLON;
+            //A5
+            case '>' -> Token.symbols.GREATERTHAN;
+            case '<' -> Token.symbols.LESSTHAN;
+
             default -> null;
         };
     }
@@ -105,13 +115,13 @@ public class Lexer {
     }
     public void addWord(){
         HashMap<String, Token.symbols> reserved = new HashMap<>();//hash map for reserved words
-        reserved.put("integer", Token.symbols.INTEGER);
-        reserved.put("real", Token.symbols.REAL);
-        reserved.put("begin", Token.symbols.BEGIN);
-        reserved.put("end", Token.symbols.END);
-        reserved.put("variables", Token.symbols.VARIABLES);
-        reserved.put("constants", Token.symbols.CONSTANTS);
-        reserved.put("define", Token.symbols.DEFINE);
+        reserved.put("integer", Token.symbols.INTEGER);reserved.put("real", Token.symbols.REAL);reserved.put("begin", Token.symbols.BEGIN);
+        reserved.put("end", Token.symbols.END);reserved.put("variables", Token.symbols.VARIABLES);reserved.put("constants", Token.symbols.CONSTANTS);
+        reserved.put("define", Token.symbols.DEFINE);reserved.put("if", Token.symbols.IF);reserved.put("then", Token.symbols.THEN);
+        reserved.put("else", Token.symbols.ELSE);reserved.put("elsif", Token.symbols.ELSIF);reserved.put("for", Token.symbols.FOR);
+        reserved.put("from", Token.symbols.FROM);reserved.put("to", Token.symbols.TO);reserved.put("while", Token.symbols.WHILE);
+        reserved.put("repeat", Token.symbols.REPEAT);reserved.put("until", Token.symbols.UNTIL);reserved.put("mod", Token.symbols.MOD);
+
         if(previousWordChars.size() != 0) {
             String wordString = previousWordChars.toString().substring(1, 3 * previousWordChars.size() - 1).replaceAll(", ", "");
             if (reserved.containsKey(wordString)) {
@@ -166,10 +176,22 @@ public class Lexer {
                         previousWordChars.add(current);
                         s = 7;
                     }
-                    else if(current == ',' || current == ':' || current == '=' || current == ';'){
+                    else if(current == ',' || current == ':' || current == '=' || current == ';' || current == '>' || current == '<'){
                         if(current == ':' && input.charAt(x+1) == '='){
                             x++;
                             result.add(Token.symbols.ASSIGNMENT);
+                        }
+                        else if(current == '>' && input.charAt(x+1) == '='){
+                            x++;
+                            result.add(Token.symbols.GREATEROREQUAL);
+                        }
+                        else if(current == '<' && input.charAt(x+1) == '='){
+                            x++;
+                            result.add(Token.symbols.LESSOREQUAL);
+                        }
+                        else if(current == '<' && input.charAt(x+1) == '>'){
+                            x++;
+                            result.add(Token.symbols.NOTEQUAL);
                         }
                         else {
                             result.add(getChar(current));
@@ -197,6 +219,21 @@ public class Lexer {
                         else {
                             result.add(getChar(current));
                         }
+                    }
+                    else if(current == ' '){
+                        s = 2;
+                    }
+                    else if(isLetter(current)){
+                        result.add(getOperatorToken(previousNumChars.get(0)));
+                        previousNumChars.clear();
+                        previousWordChars.add(current);
+                        s = 7;
+                    }
+                    else if(current == '-' || current == '+'){
+                        result.add(getOperatorToken(previousNumChars.get(0)));
+                        previousNumChars.clear();
+                        previousNumChars.add(current);
+                        s = 2;
                     }
                     else{
                         throw new StateException("Incorrect Input:State 2");
@@ -278,6 +315,11 @@ public class Lexer {
                         else {
                             result.add(getChar(current));
                         }
+                    }
+                    else if(isLetter(current)){
+                        addNumber();
+                        previousWordChars.add(current);
+                        s = 7;
                     }
                     else{
                         throw new StateException("Incorrect Input:State 5");

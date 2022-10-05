@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
  * Assignment 4-2nd Draft 9/22/22
+ * Assignment 5-1st Draft 10/1/22
  */
 /*
     Assignment 2:
@@ -17,7 +18,7 @@ import java.util.ArrayList;
         5) factor = {-} number or lparen expresion rparen
         6) matchAndRemove to check for token
     Assignment 3:
-        1) Function definition method
+        7) Function definition method
             a) include toString
             b) populate name
             c) look for params
@@ -27,6 +28,12 @@ import java.util.ArrayList;
             g) look for body
      Assignment 4:
             h) look for statements in body
+     Assignment 5:
+        8) make factor accept identifier
+        9) add modulo to term
+        10) make functions for while, for, and if
+            a) look for applicable keywords
+            b) else return null
  */
 public class Parser {
     private ArrayList<Token.symbols> tokens;
@@ -119,7 +126,7 @@ public class Parser {
             return processConstants();
         }
         else{
-            throw new Exception("No constant statement");
+            return null;
         }
     }
     public ArrayList<VariableNode> processConstants() throws Exception{
@@ -154,7 +161,7 @@ public class Parser {
             return processVariables();
         }
         else{
-            throw new Exception("no variable statement");
+            return null;
         }
     }
     public ArrayList<VariableNode> processVariables() throws Exception {
@@ -192,17 +199,35 @@ public class Parser {
     }
 
     public ArrayList<StatementNode> body() throws Exception {
+        while(matchAndRemove(Token.symbols.EOL) != null){}
         if(matchAndRemove(Token.symbols.BEGIN) != null && matchAndRemove(Token.symbols.EOL) != null){
             while(matchAndRemove(Token.symbols.EOL) != null){}
             ArrayList<StatementNode> out = new ArrayList<>();
             out = statement();
             while(matchAndRemove(Token.symbols.EOL) != null){}
-            if(matchAndRemove(Token.symbols.END) != null && matchAndRemove(Token.symbols.EOL) != null){
-                return out;
+            while(matchAndRemove(Token.symbols.END) == null && matchAndRemove(Token.symbols.EOL) == null && tokens.size() > 0) {
+                if (matchAndRemove(Token.symbols.WHILE) != null) {
+                    out.add(new StatementNode(whileLoop()));
+                    if(matchAndRemove(Token.symbols.END) == null && matchAndRemove(Token.symbols.EOL) == null){
+                        throw new Exception("no end of loop");
+                    }
+                    while(matchAndRemove(Token.symbols.EOL) != null){}
+                } else if (matchAndRemove(Token.symbols.FOR) != null) {
+                    out.add(new StatementNode(forLoop()));
+                    if(matchAndRemove(Token.symbols.END) == null && matchAndRemove(Token.symbols.EOL) == null){
+                        throw new Exception("no end of loop");
+                    }
+                    while(matchAndRemove(Token.symbols.EOL) != null){}
+                } else if (matchAndRemove(Token.symbols.IF) != null) {
+                    out.add(new StatementNode(ifStatement(Token.symbols.IF)));
+                    if(matchAndRemove(Token.symbols.END) == null && matchAndRemove(Token.symbols.EOL) == null){
+                        throw new Exception("no end of loop");
+                    }
+                    while(matchAndRemove(Token.symbols.EOL) != null){}
+                }
             }
-            else{
-                throw new Exception("Body error");
-            }
+            while(matchAndRemove(Token.symbols.EOL) != null){}
+            return out;
         }
         else {
             throw new Exception("Body error");
@@ -217,8 +242,61 @@ public class Parser {
             out.add( new StatementNode(new AssignmentNode(new VariableReferenceNode(Token.getWord()), expression())));
             while(matchAndRemove(Token.symbols.EOL) != null){}
         }
-
         return out;
+    }
+
+    public WhileNode whileLoop() throws Exception {
+        Token.symbols condition = null;
+        BooleanExpressionNode expression = null;
+        expression = new BooleanExpressionNode(expression(), matchCondition(tokens.get(0)), expression());
+        while(matchAndRemove(Token.symbols.EOL) != null){}
+
+        return new WhileNode(expression, body());
+    }
+    public ForNode forLoop() throws Exception{
+        Node start;
+        Node end;
+        if(matchAndRemove(Token.symbols.IDENTIFIER) != null && matchAndRemove(Token.symbols.FROM) != null) {
+            start = expression();
+            if(matchAndRemove(Token.symbols.TO) != null) {
+                end = expression();
+                return new ForNode(new VariableReferenceNode(Token.getWord()), start, end, body());
+            }
+            else{
+                throw new Exception("forLoop error");
+            }
+        }
+        else{
+            throw new Exception("forLoop error");
+        }
+    }
+
+    public IfNode ifStatement(Token.symbols ifType) throws Exception{
+        //left, right, condition for booexp
+        if(ifType != Token.symbols.ELSE) {
+            Node left = expression();
+            Token.symbols condition = matchCondition(tokens.get(0));
+            Node right = expression();
+            if (matchAndRemove(Token.symbols.THEN) == null && matchAndRemove(Token.symbols.EOL) == null) {
+                new Exception("no then & EOL in if");
+            }
+            ArrayList<StatementNode> statements;
+            statements = body();
+            while (matchAndRemove(Token.symbols.EOL) != null) {
+            }
+            if (matchAndRemove(Token.symbols.ELSIF) != null) {
+                return new IfNode(new BooleanExpressionNode(left, condition, right), statements, ifStatement(Token.symbols.ELSIF));
+
+            } else if (matchAndRemove(Token.symbols.ELSE) != null) {
+                return new IfNode(new BooleanExpressionNode(left, condition, right), statements, ifStatement(Token.symbols.ELSE));
+            } else {
+                throw new Exception("no else");
+            }
+        }
+        else{
+            return new IfNode(body());
+        }
+
     }
      /*
         term { ( plus or minus) term }
@@ -267,6 +345,9 @@ public class Parser {
             //System.out.println("Exiting <term>");
             return new MathOpNode(Token.symbols.DIVIDE, left, factor());
         }
+        else if(matchAndRemove(Token.symbols.MOD) != null || ((!tokens.isEmpty()) && tokens.get(0) == Token.symbols.LPAREN )){
+            return new MathOpNode(Token.symbols.MOD, left, factor());
+        }
         else{
             //System.out.println("Exiting <term>");
             return left;
@@ -299,6 +380,9 @@ public class Parser {
                     System.out.println("Not a number");
                 }
             }
+        }
+        else if(matchAndRemove(Token.symbols.IDENTIFIER) != null){
+            return new VariableReferenceNode(Token.getWord());
         }
         else{
             if(matchAndRemove(Token.symbols.LPAREN) != null) {
@@ -339,6 +423,24 @@ public class Parser {
             else{
                 return null;
             }
+        }
+    }
+    public Token.symbols matchCondition(Token.symbols condition){
+        switch(condition){
+            case GREATERTHAN:
+                return matchAndRemove(Token.symbols.GREATERTHAN);
+            case LESSTHAN:
+                return matchAndRemove(Token.symbols.LESSTHAN);
+            case GREATEROREQUAL:
+                return matchAndRemove(Token.symbols.GREATEROREQUAL);
+            case LESSOREQUAL:
+                return matchAndRemove(Token.symbols.LESSOREQUAL);
+            case EQUAL:
+                return matchAndRemove(Token.symbols.EQUAL);
+            case NOTEQUAL:
+                return matchAndRemove(Token.symbols.NOTEQUAL);
+            default:
+                return null;
         }
     }
 }

@@ -11,16 +11,38 @@
  */
 public class StatementNode extends Node {
     AssignmentNode assignment;
+    WhileNode whileLoop;
+    ForNode forLoop;
+
+    IfNode ifStatement;
 
     public StatementNode(AssignmentNode in){
         this.assignment = in;
     }
+    public StatementNode(WhileNode in){
+        this.whileLoop = in;
+    }
+    public StatementNode(ForNode in){ this.forLoop = in; }
+    public StatementNode(IfNode in){ this.ifStatement = in; }
+
+
 
     public StatementNode() {}
 
 
     @Override
     public String toString() {
-        return assignment.toString();
+        if(assignment != null) {
+            return assignment.toString();
+        }
+        else if (whileLoop != null) {
+            return whileLoop.toString();
+        }
+        else if(forLoop != null) {
+            return forLoop.toString();
+        }
+        else{
+            return ifStatement.toString();
+        }
     }
 }

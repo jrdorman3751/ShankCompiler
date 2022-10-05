@@ -2,12 +2,15 @@
  * Julian Dorman
  * 311-Phipps
  * Assignment 2-2nd Draft 9/9/22
+ * Assignment 5-1st Draft 10/1/22
  */
 /*
     Assignment 2:
         1) derives from Node
         2) enum of math operation, read only
         3) two references, left & right, read only
+    Assignment 5:
+        4) add modulo
 
  */
 public class MathOpNode extends Node {

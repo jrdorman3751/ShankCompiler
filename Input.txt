@@ -1,10 +1,18 @@
 define start(t : integer; s : real)
-(* thi world be hoolow *)
-constants
-pi = 3.141
 variables
-a,b,c : integer
+    a,b,c : integer
 begin
-x := 5+5
-y := 3+7
+    a := 7
+    if a < 5 then
+    begin
+        a := 5
+    end
+    elsif a > 5 then
+    begin
+        b := 5
+    end
+    else
+    begin
+        c := 5
+    end
 end
