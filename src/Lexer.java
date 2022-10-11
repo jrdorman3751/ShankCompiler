@@ -32,7 +32,7 @@ import static java.lang.Character.isLetter;
         9) add assignment case to state 1
    Assignment 5:
          10) add if,then,else,elsif,for,from,to,while,repeat,until,mod to hashmap
-         11) add boolean comparators to state 1
+         11) add boolean comparators to state 1 and 3
          12) space(2), sign(2), letter(7) to state 2
          13) letter(7) to state 5
  */
@@ -261,6 +261,28 @@ public class Lexer {
                         if(current == '(' && input.charAt(x+1) == '*'){
                             x++;
                             s = 8;
+                        }
+                        else {
+                            result.add(getChar(current));
+                        }
+                    }
+                    else if(current == ',' || current == ':' || current == '=' || current == ';' || current == '>' || current == '<'){
+                        addNumber();
+                        if(current == ':' && input.charAt(x+1) == '='){
+                            x++;
+                            result.add(Token.symbols.ASSIGNMENT);
+                        }
+                        else if(current == '>' && input.charAt(x+1) == '='){
+                            x++;
+                            result.add(Token.symbols.GREATEROREQUAL);
+                        }
+                        else if(current == '<' && input.charAt(x+1) == '='){
+                            x++;
+                            result.add(Token.symbols.LESSOREQUAL);
+                        }
+                        else if(current == '<' && input.charAt(x+1) == '>'){
+                            x++;
+                            result.add(Token.symbols.NOTEQUAL);
                         }
                         else {
                             result.add(getChar(current));
