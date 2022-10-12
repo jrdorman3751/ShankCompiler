@@ -1,18 +1,2 @@
-define start(t : integer; s : real)
-variables
-    a,b,c : integer
-begin
-    a := 7
-    if a < 5 then
-    begin
-        a := 5
-    end
-    elsif a mod 15=0 then
-    begin
-        b := 5
-    end
-    else
-    begin
-        c := 5
-    end
-end
+start 3, x, y, var sum
+create 4, var collect, filename

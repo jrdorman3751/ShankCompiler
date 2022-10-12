@@ -9,13 +9,15 @@
         1) inherits from node
         2) returns result of assignment
  */
-public class StatementNode extends Node {
+public class StatementNode extends Node{
+    FunctionCallNode functionCall;
     AssignmentNode assignment;
     WhileNode whileLoop;
     ForNode forLoop;
 
     IfNode ifStatement;
 
+    public StatementNode(FunctionCallNode in){this.functionCall = in;}
     public StatementNode(AssignmentNode in){
         this.assignment = in;
     }

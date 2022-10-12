@@ -6,6 +6,7 @@
  * Assignment 3-2nd Draft 9/16/22
  * Assignment 4-2nd Draft 9/24/22
  * Assignment 5-1st Draft 10/1/22
+ * Assignment 6-1st Draft 10/7/22
  */
 /*
     Assignment 1:
@@ -25,6 +26,9 @@
         6) add assignments
     Assignment 5:
         7) add if, then, else, elsif, for, from, to, while, repeat, until, mod, >, <, >=, <=, <>(not equal)
+    Assignment 6:
+        8) add var
+
 
 
  */
@@ -65,7 +69,7 @@ public class Token {
         return out;
     }
     public enum symbols{ //2)
-        IDENTIFIER, DEFINE, VARIABLES, CONSTANTS, ASSIGNMENT,//5
+        IDENTIFIER, DEFINE, VARIABLES, CONSTANTS, ASSIGNMENT, VAR,//6
         SEMICOLON, COLON, COMMA, EQUAL, GREATERTHAN, LESSTHAN, GREATEROREQUAL, LESSOREQUAL, NOTEQUAL,//9
         IF, THEN, ELSE, ELSIF, FOR, FROM, TO, WHILE, REPEAT, UNTIL, MOD,//11
         NUMBER, INTEGER, REAL,//3
@@ -80,7 +84,8 @@ public class Token {
                 case DEFINE -> "Define ";
                 case VARIABLES -> "Variables ";
                 case CONSTANTS -> "Constants ";
-                case ASSIGNMENT ->  "Assignment ";//5
+                case ASSIGNMENT ->  "Assignment ";
+                case VAR -> "Variable";//6
                 case SEMICOLON -> "Semicolon ";
                 case COLON -> "Colon ";
                 case COMMA -> "Comma ";

@@ -74,7 +74,7 @@ public class Shank {
         ///*
         Parser parser = new Parser(allTokens);
         Node parsedExpression = parser.parserMethod();
-        System.out.println(parsedExpression.toString());
+        //System.out.println(parsedExpression.toString());
         //temporary System.out.println(Interpreter.resolve(parsedExpression));
         //*/
     }

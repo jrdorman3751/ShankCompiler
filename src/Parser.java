@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
  * Assignment 4-2nd Draft 9/22/22
- * Assignment 5-1st Draft 10/1/22
+ * Assignment 5-2nd Draft 10/1/22
  */
 /*
     Assignment 2:
@@ -34,6 +34,9 @@ import java.util.ArrayList;
         10) make functions for while, for, and if
             a) look for applicable keywords
             b) else return null
+     Assignment 6:
+        11) add function calls to parser
+        12) add to statement() function
  */
 public class Parser {
     private ArrayList<Token.symbols> tokens;
@@ -43,7 +46,11 @@ public class Parser {
     }
 
     public Node parserMethod() throws Exception{
-        Node function = functionDefinition();
+        while(tokens.isEmpty() != true) {
+            Node function = functionCall();
+            System.out.println(function.toString());
+        }
+        //Node function = functionDefinition();
         /*
         Node left = expression();
         while(!tokens.isEmpty()){//if more to read after first operation
@@ -84,7 +91,8 @@ public class Parser {
         return left;
 
          */
-        return function;
+
+        return null;
     }
 
     public Node functionDefinition() throws Exception {
@@ -234,7 +242,10 @@ public class Parser {
         }
     }
     public ArrayList<StatementNode> statement() throws Exception {
-        return assignment();
+        ArrayList<StatementNode> out;
+        out = assignment();
+        out.add(functionCall());
+        return out;
     }
     public ArrayList<StatementNode> assignment() throws Exception {
         ArrayList<StatementNode> out = new ArrayList<>();
@@ -297,6 +308,48 @@ public class Parser {
             return new IfNode(body());
         }
 
+    }
+    public FunctionCallNode functionCall() throws Exception{
+        while(matchAndRemove(Token.symbols.EOL)!=null){};
+        if(matchAndRemove(Token.symbols.IDENTIFIER) != null){
+            String name = Token.getWord();
+            ArrayList<ParameterNode> parameters = new ArrayList<>();
+            while(matchAndRemove(Token.symbols.EOL) == null){
+                if(matchAndRemove(Token.symbols.COMMA) != null){
+                    continue;
+                }
+                if(matchAndRemove(Token.symbols.NUMBER) != null){
+                    String numString = Token.getNum();
+                    try {
+                        int num = Integer.parseInt(numString);
+                        //System.out.println("Exiting <factor>");
+                        parameters.add(new ParameterNode(new IntegerNode(num)));
+                    }
+                    catch(NumberFormatException i){
+                        try{
+                            float num = Float.parseFloat(numString);
+                            //System.out.println("Exiting <factor>");
+                            parameters.add(new ParameterNode(new FloatNode(num)));
+                        }
+                        catch(NumberFormatException f){
+                            System.out.println("Not a number");
+                        }
+                    }
+                }
+                else if(matchAndRemove(Token.symbols.IDENTIFIER) != null){
+                    parameters.add(new ParameterNode(new VariableReferenceNode(Token.getWord()), true));
+                }
+                else{
+                    if(matchAndRemove(Token.symbols.VAR) != null && matchAndRemove(Token.symbols.IDENTIFIER) != null){
+                        parameters.add(new ParameterNode(new VariableReferenceNode(Token.getWord()), false));
+                    }
+                }
+            }
+            return new FunctionCallNode(parameters,name);
+        }
+        else{
+            throw new Exception("Function call error");
+        }
     }
      /*
         term { ( plus or minus) term }

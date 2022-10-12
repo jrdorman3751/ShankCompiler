@@ -2,7 +2,7 @@
  *  Julian Dorman
  *  311-Phipps
  *  Assignment 3-2nd Draft 9/16/22
- *
+ *  Assignment 6-1st Draft 10/7/22
  */
 /*
     Assignment 3:
@@ -22,6 +22,9 @@ public class VariableNode extends Node {
         this.isConstant = constant;
         this.dataType = type;
         ASTNode = n;
+    }
+    public void setConstant(){
+        isConstant = true;
     }
 
 

@@ -13,7 +13,8 @@ import static java.lang.Character.isLetter;
  * Assignment 2-2nd Draft 9/9/22
  * Assignment 3-2nd Draft 9/16/22
  * Assignment 4-2nd Draft 9/22/22
- * Assignment 5-1st Draft 10/1/22
+ * Assignment 5-2nd Draft 10/1/22
+ * Assignment 6-1st Draft 10/7/22
  */
 /*
     Assignment 1:
@@ -35,6 +36,8 @@ import static java.lang.Character.isLetter;
          11) add boolean comparators to state 1 and 3
          12) space(2), sign(2), letter(7) to state 2
          13) letter(7) to state 5
+   Assignment 6:
+        14) add var to hashmap
  */
 public class Lexer {
     private String input;
@@ -121,6 +124,7 @@ public class Lexer {
         reserved.put("else", Token.symbols.ELSE);reserved.put("elsif", Token.symbols.ELSIF);reserved.put("for", Token.symbols.FOR);
         reserved.put("from", Token.symbols.FROM);reserved.put("to", Token.symbols.TO);reserved.put("while", Token.symbols.WHILE);
         reserved.put("repeat", Token.symbols.REPEAT);reserved.put("until", Token.symbols.UNTIL);reserved.put("mod", Token.symbols.MOD);
+        reserved.put("var", Token.symbols.VAR);
 
         if(previousWordChars.size() != 0) {
             String wordString = previousWordChars.toString().substring(1, 3 * previousWordChars.size() - 1).replaceAll(", ", "");
